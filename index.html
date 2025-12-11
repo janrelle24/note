@@ -10,8 +10,37 @@
     <main>
         <div class="note-container">
             <h1>Notebook</h1>
+            <div class="tab">
+                <div class="menu" data-menu="fileMenu">
+                    <button class="menu-btn">File</button> <!--onclick="dropDown('fileMenu')"-->
+                    <div id="fileMenu" class="menu-content">
+                        <a href="#">New</a>
+                        <a href="#">Open</a>
+                        <a href="#">Save</a>
+                    </div>
+                </div>
+                <div class="menu" data-menu="editMenu">
+                    <button class="menu-btn">Edit</button> <!-- onclick="dropDown('editMenu')"-->
+                    <div id="editMenu" class="menu-content">
+                        <a href="#">Undo</a>
+                        <a href="#">Redo</a>
+                        <a href="#">Cut</a>
+                        <a href="#">Copy</a>
+                        <a href="#">Paste</a>
+                    </div>
+                </div>
+                <div class="menu" data-menu="viewMenu">
+                    <button class="menu-btn">View</button> <!-- onclick="dropDown('viewMenu')"-->
+                    <div id="viewMenu" class="menu-content">
+                        <a href="#">Zoom In</a>
+                        <a href="#">Zoom Out</a>
+                        <a href="#">Fullscreen</a>
+                    </div>
+                </div>
+            </div>
             <textarea name="notebook" id="notebook"></textarea>
         </div>
     </main>
+    <script src="script.js"></script>
 </body>
 </html>
