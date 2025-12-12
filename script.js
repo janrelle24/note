@@ -1,30 +1,4 @@
 // start dropdown
-/*
-function dropDown(id){
-    // Close all menus first
-    let dropdowns = document.getElementsByClassName("menu-content");
-    for (let i = 0; i < dropdowns.length; i++) {
-        if (dropdowns[i].id !== id) {
-            dropdowns[i].classList.remove("show");
-        }
-    }
-     // Then toggle the one clicked
-    document.getElementById(id).classList.toggle("show");
-}
-
-// Close when clicking outside menus
-window.onclick = function(event){
-    if(!event.target.matches('.menu-btn')){
-        let dropdowns = document.getElementsByClassName("menu-content");z
-        for (let i = 0; i < dropdowns.length; i++){
-            if (dropdowns[i].classList.contains('show')) {
-                dropdowns[i].classList.remove('show');
-            }
-        }
-    }
-}
-//end dropdown*/
-// start dropdown
 let activeMenu = null;
 
 // CLICK MENU BUTTON
@@ -73,12 +47,54 @@ window.addEventListener("click", (e) => {
 //end dropdown
 
 //notebook functions
-let note = document.getElementById("notebook");
+/*let note = document.getElementById("notebook");*/
+/* ----------------- MULTIPLE NOTES SYSTEM ----------------- */
+let noteCount = 1;
+let notes = { 1: "" };
+let activeNote = 1;
+
+// Switch Notes
+function switchNote(id) {
+    notes[activeNote] = document.getElementById("notebook" + activeNote).value;
+
+    document.querySelectorAll(".note-area").forEach(n => n.style.display = "none");
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+
+    document.getElementById("notebook" + id).style.display = "block";
+    document.querySelector(`[data-note="${id}"]`).classList.add("active");
+
+    activeNote = id;
+}
+
+// Add New Note
+document.getElementById("addNoteBtn").onclick = () => {
+    noteCount++;
+    let newId = noteCount;
+
+    // CREATE TAB
+    let tab = document.createElement("button");
+    tab.classList.add("tab-btn");
+    tab.dataset.note = newId;
+    tab.innerText = "Note " + newId;
+    tab.onclick = () => switchNote(newId);
+    document.getElementById("noteTabs").appendChild(tab);
+
+    // CREATE TEXTAREA
+    let ta = document.createElement("textarea");
+    ta.classList.add("note-area");
+    ta.id = "notebook" + newId;
+    ta.style.display = "none";
+    document.querySelector(".note-container").appendChild(ta);
+
+    notes[newId] = "";
+
+    switchNote(newId);
+};
 
 //new file
 document.querySelector("#fileMenu a:nth-child(1)").onclick = () => {
     if (confirm("Create new note? Unsaved text will be lost.")) {
-        note.value = "";
+        notes.value = "";
     }
 };
 
@@ -99,13 +115,66 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
 
 // SAVE FILE
 document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
+    // Ask user for a filename
+    let filename = prompt("Enter file name:", "OnlineNoteBook.txt");
+
+    // If user clicks Cancel → stop save
+    if (filename === null) return;
+
+    // If no extension → add .txt
+    if (!filename.includes(".")) {
+        filename += ".txt";
+    }
+
     let blob = new Blob([note.value], { type: "text/plain" });
     let url = URL.createObjectURL(blob);
 
     let a = document.createElement("a");
     a.href = url;
-    a.download = "note.txt";
+    a.download = filename;
     a.click();
 
     URL.revokeObjectURL(url);
 };
+
+/*
+// ===== EDIT MENU =====
+
+// UNDO
+document.querySelector("#editMenu a:nth-child(1)").onclick = () => document.execCommand("undo");
+
+// REDO
+document.querySelector("#editMenu a:nth-child(2)").onclick = () => document.execCommand("redo");
+
+// CUT
+document.querySelector("#editMenu a:nth-child(3)").onclick = () => document.execCommand("cut");
+
+// COPY
+document.querySelector("#editMenu a:nth-child(4)").onclick = () => document.execCommand("copy");
+
+// PASTE
+document.querySelector("#editMenu a:nth-child(5)").onclick = () => document.execCommand("paste");
+
+
+// ===== VIEW MENU =====
+
+// ZOOM IN
+document.querySelector("#viewMenu a:nth-child(1)").onclick = () => {
+    let size = parseFloat(window.getComputedStyle(note).fontSize);
+    note.style.fontSize = (size + 2) + "px";
+};
+
+// ZOOM OUT
+document.querySelector("#viewMenu a:nth-child(2)").onclick = () => {
+    let size = parseFloat(window.getComputedStyle(note).fontSize);
+    if (size > 8) note.style.fontSize = (size - 2) + "px";
+};
+
+// FULLSCREEN
+document.querySelector("#viewMenu a:nth-child(3)").onclick = () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+};*/

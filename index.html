@@ -5,14 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Note Book</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
     <main>
         <div class="note-container">
             <h1>Notebook</h1>
+            <!--add note button-->
+            <div class="add-note">
+                <i class="fa-solid fa-plus" id="addNoteBtn"></i>
+            </div>
+            <!--note tabs-->
+            <div class="note-tabs" id="noteTabs">
+                <button class="tab-btn active" data-note="1">Note 1</button>
+            </div>
+            <!--Menu bar-->
             <div class="tab">
                 <div class="menu" data-menu="fileMenu">
-                    <button class="menu-btn">File</button> <!--onclick="dropDown('fileMenu')"-->
+                    <button class="menu-btn">File</button>
                     <div id="fileMenu" class="menu-content">
                         <a href="#">New</a>
                         <a href="#">Open</a>
@@ -20,7 +30,7 @@
                     </div>
                 </div>
                 <div class="menu" data-menu="editMenu">
-                    <button class="menu-btn">Edit</button> <!-- onclick="dropDown('editMenu')"-->
+                    <button class="menu-btn">Edit</button>
                     <div id="editMenu" class="menu-content">
                         <a href="#">Undo</a>
                         <a href="#">Redo</a>
@@ -30,7 +40,7 @@
                     </div>
                 </div>
                 <div class="menu" data-menu="viewMenu">
-                    <button class="menu-btn">View</button> <!-- onclick="dropDown('viewMenu')"-->
+                    <button class="menu-btn">View</button>
                     <div id="viewMenu" class="menu-content">
                         <a href="#">Zoom In</a>
                         <a href="#">Zoom Out</a>
@@ -38,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            <textarea name="notebook" id="notebook"></textarea>
+            <textarea name="notebook" id="notebook" class="note-area"></textarea>
         </div>
     </main>
     <script src="script.js"></script>

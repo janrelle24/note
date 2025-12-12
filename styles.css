@@ -24,10 +24,38 @@ body{
     color: #333;
     letter-spacing: 1px;
 }
-#notebook {
+.add-note{
+    text-align: right;
+    margin-bottom: 10px;
+}
+.add-note i{
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 8px;
+    border-radius: 50%;
+    background: #4a90e2;
+    color: white;
+}
+.note-tabs{
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.tab-btn{
+    padding: 7px 15px;
+    border: none;
+    background: #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.tab-btn.active{
+    background: #4a90e2;
+    color: white;
+}
+/* NOTEBOOK STYLE */
+
+.note-area {
     overflow: hidden;
-    /*width: 100%;
-    height: 100%;*/
     width: 800px;
     height: 500px;
     padding: 20px;
@@ -38,10 +66,7 @@ body{
     resize: none;
     outline: none;
     background: #fdfdfd;
-
-    /* soft inner shadow */
     box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-
     transition: 0.3s;
     line-height: 27px;
     border: 2px solid #ccc;
@@ -54,8 +79,8 @@ body{
     );
 }
 
-/* Focus effect */
-#notebook:focus {
+
+.note-area:focus {
     border-color: #4a90e2;
     box-shadow: 0 0 15px rgba(74, 144, 226, 0.4);
 }
