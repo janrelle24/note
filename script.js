@@ -71,3 +71,41 @@ window.addEventListener("click", (e) => {
     }
 });
 //end dropdown
+
+//notebook functions
+let note = document.getElementById("notebook");
+
+//new file
+document.querySelector("#fileMenu a:nth-child(1)").onclick = () => {
+    if (confirm("Create new note? Unsaved text will be lost.")) {
+        note.value = "";
+    }
+};
+
+// OPEN FILE (text file)
+document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".txt";
+
+    input.onchange = () => {
+        let reader = new FileReader();
+        reader.onload = () => { note.value = reader.result; };
+        reader.readAsText(input.files[0]);
+    };
+
+    input.click();
+};
+
+// SAVE FILE
+document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
+    let blob = new Blob([note.value], { type: "text/plain" });
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "note.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+};
