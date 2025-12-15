@@ -55,7 +55,9 @@ let activeNote = 1;
 function switchNote(id) {
     // Save current note before switching
     let currentTa = document.getElementById("notebook" + activeNote);
-    notes[activeNote] = currentTa.value;
+    if (currentTa) {
+        notes[activeNote] = currentTa.value;
+    }
 
     // Hide all textareas
     document.querySelectorAll(".note-area").forEach(n => n.style.display = "none");
@@ -125,9 +127,16 @@ document.getElementById("noteTabs").addEventListener("click", (e) => {
         // If closed note was active
         if (isActive) {
             let remainingId = Number(Object.keys(notes)[0]);
-            activeNote = remainingId;   // ✅ update first
+            activeNote = remainingId; 
             switchNote(remainingId);
         }
+        return;
+    }
+    // SWITCH TAB
+    let tab = e.target.closest(".tab-btn");
+    if (tab) {
+        let id = Number(tab.dataset.note);
+        switchNote(id);
     }
 }); 
 
@@ -135,7 +144,9 @@ document.getElementById("noteTabs").addEventListener("click", (e) => {
 document.querySelector("#fileMenu a:nth-child(1)").onclick = () => {
     if (confirm("Create new note? Unsaved text will be lost.")) {
         document.getElementById("notebook" + activeNote).value = "";
-        document.querySelector(`[data-note="${activeNote}"]`).innerText = "Note " + activeNote;
+        document.querySelector(
+            `[data-note="${activeNote}"] .tab-title`
+        ).innerText = "Note " + activeNote;
     }
 };
 
@@ -157,7 +168,9 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
             let fileName = file.name.replace(".txt", "");
 
             // Rename the tab
-            document.querySelector(`[data-note="${activeNote}"]`).innerText = fileName;
+            document.querySelector(
+                `[data-note="${activeNote}"] .tab-title`
+            ).innerText = fileName;
         };
 
         reader.readAsText(file);
@@ -168,7 +181,9 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
 
 // SAVE FILE
 document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
-    let defaultName = document.querySelector(`[data-note="${activeNote}"]`).innerText;
+    let defaultName = document.querySelector(
+        `[data-note="${activeNote}"] .tab-title`
+    ).innerText;
     // Ask user for a filename
     let filename = prompt("Enter file name:", "OnlineNoteBook.txt");
 
@@ -197,7 +212,9 @@ document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
     URL.revokeObjectURL(url);
 
     // Update Tab Name (remove extension)
-    document.querySelector(`[data-note="${activeNote}"]`).innerText = filename.replace(".txt", "");
+    document.querySelector(
+        `[data-note="${activeNote}"] .tab-title`
+    ).innerText = filename.replace(".txt", "");
 };
 
 
