@@ -74,7 +74,12 @@ function createNote(id) {
     let tab = document.createElement("button");
     tab.classList.add("tab-btn");
     tab.dataset.note = id;
-    tab.innerText = "Note " + id;
+    /*tab.innerText = "Note " + id;*/
+    tab.innerHTML = `
+        <span class="tab-title">Note ${id}</span>
+        <i class="fa-solid fa-x close-tab"></i>
+    `;
+
     document.getElementById("noteTabs").appendChild(tab);
 
     // Create textarea
@@ -96,9 +101,33 @@ document.getElementById("addNoteBtn").addEventListener("click", () => {
 
 // Handle tab clicks (Event Delegation)
 document.getElementById("noteTabs").addEventListener("click", (e) => {
-    if (e.target.classList.contains("tab-btn")) {
-        let id = e.target.dataset.note;
-        switchNote(id);
+    if (e.target.classList.contains("close-tab")) {
+        e.stopPropagation(); // stop tab switch
+
+        let tab = e.target.parentElement;
+        let id = Number(tab.dataset.note);
+
+        // Prevent closing last note
+        if (Object.keys(notes).length === 1) {
+            alert("You must have at least one note.");
+            return;
+        }
+
+        let isActive = id === activeNote;
+
+         // Remove textarea & tab
+        document.getElementById("notebook" + id)?.remove();
+        // Remove tab
+        tab.remove();
+        // Remove from notes object
+        delete notes[id];
+
+        // If closed note was active
+        if (isActive) {
+            let remainingId = Number(Object.keys(notes)[0]);
+            activeNote = remainingId;   // ✅ update first
+            switchNote(remainingId);
+        }
     }
 }); 
 

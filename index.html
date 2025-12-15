@@ -12,12 +12,17 @@
         <div class="note-container">
             <h1>Notebook</h1>
             <!--add note button-->
-            <div class="add-note">
-                <i class="fa-solid fa-plus" id="addNoteBtn"></i>
-            </div>
-            <!--note tabs-->
-            <div class="note-tabs" id="noteTabs">
-                <button class="tab-btn active" data-note="1">Note 1</button>
+            <div class="tab-note">
+                <!--note tabs-->
+                <div class="note-tabs" id="noteTabs">
+                    <div class="tab-btn active" data-note="1">
+                        <span class="tab-title">Note 1</span>
+                        <i class="fa-solid fa-x close-tab"></i>
+                    </div>
+                </div>
+                <div class="add-note">
+                    <i class="fa-solid fa-plus" id="addNoteBtn"></i>
+                </div>
             </div>
             <!--Menu bar-->
             <div class="tab">
