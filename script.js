@@ -48,7 +48,12 @@ window.addEventListener("click", (e) => {
 
 /* ----------------- MULTIPLE NOTES SYSTEM ----------------- */
 let noteCount = 1;
-let notes = { 1: "" };
+let notes = {
+    1: {
+        content: "",
+        filename: null
+    }
+};
 let activeNote = 1;
 
 // Switch Notes
@@ -56,7 +61,7 @@ function switchNote(id) {
     // Save current note before switching
     let currentTa = document.getElementById("notebook" + activeNote);
     if (currentTa) {
-        notes[activeNote] = currentTa.value;
+        notes[activeNote].content = currentTa.value;
     }
 
     // Hide all textareas
@@ -64,6 +69,9 @@ function switchNote(id) {
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
 
     // Show new note
+    
+    document.getElementById("notebook" + id).value =
+        notes[id].content || "";
     document.getElementById("notebook" + id).style.display = "block";
     document.querySelector(`[data-note="${id}"]`).classList.add("active");
 
@@ -76,7 +84,6 @@ function createNote(id) {
     let tab = document.createElement("button");
     tab.classList.add("tab-btn");
     tab.dataset.note = id;
-    /*tab.innerText = "Note " + id;*/
     tab.innerHTML = `
         <span class="tab-title">Note ${id}</span>
         <i class="fa-solid fa-x close-tab"></i>
@@ -91,7 +98,10 @@ function createNote(id) {
     ta.style.display = "none";
     document.querySelector(".note-container").appendChild(ta);
 
-    notes[id] = "";
+    notes[id] = {
+        content: "",
+        filename: null
+    };
 }
 
 // Add new note button
@@ -163,6 +173,8 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
         reader.onload = () => {
             let current = document.getElementById("notebook" + activeNote);
             current.value = reader.result;
+            notes[activeNote].content = reader.result;
+            notes[activeNote].filename = file.name;
 
             // Remove .txt from tab name
             let fileName = file.name.replace(".txt", "");
@@ -181,40 +193,39 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
 
 // SAVE FILE
 document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
-    let defaultName = document.querySelector(
-        `[data-note="${activeNote}"] .tab-title`
-    ).innerText;
-    // Ask user for a filename
-    let filename = prompt("Enter file name:", "OnlineNoteBook.txt");
-
-    // If user clicks Cancel → stop save
-    if (filename === null) return;
-
-    // If no extension → add .txt
-    if (!filename.includes(".")) {
-        filename += ".txt";
-    }
-
-    // Get current active note textarea
+    
+    let note = notes[activeNote];
     let current = document.getElementById("notebook" + activeNote);
 
-    // Create downloadable file
-    let blob = new Blob([current.value], { type: "text/plain" });
+    // Save current content
+    note.content = current.value;
+
+    // Ask filename ONLY if not saved before
+    if (!note.filename) {
+        let filename = prompt("Enter file name:", "OnlineNoteBook.txt");
+        if (filename === null) return;
+
+        if (!filename.includes(".")) {
+            filename += ".txt";
+        }
+
+        note.filename = filename;
+
+        // Update tab title
+        document.querySelector(
+            `[data-note="${activeNote}"] .tab-title`
+        ).innerText = filename.replace(".txt", "");
+    }
+    // Create file
+    let blob = new Blob([note.content], { type: "text/plain" });
     let url = URL.createObjectURL(blob);
 
-    // Create temporary link
     let a = document.createElement("a");
     a.href = url;
-    a.download = filename;
+    a.download = note.filename;
     a.click();
 
-    // Cleanup
     URL.revokeObjectURL(url);
-
-    // Update Tab Name (remove extension)
-    document.querySelector(
-        `[data-note="${activeNote}"] .tab-title`
-    ).innerText = filename.replace(".txt", "");
 };
 
 
