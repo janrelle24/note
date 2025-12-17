@@ -192,7 +192,8 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
 };
 
 // SAVE FILE
-document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
+//connect to server to save file
+document.querySelector("#fileMenu a:nth-child(3)").onclick = async () => {
     
     let note = notes[activeNote];
     let current = document.getElementById("notebook" + activeNote);
@@ -216,6 +217,16 @@ document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
             `[data-note="${activeNote}"] .tab-title`
         ).innerText = filename.replace(".txt", "");
     }
+    await fetch("/api/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            filename: note.filename,
+            content: note.content
+        })
+    });
+    alert("File saved successfully!");
+    /*
     // Create file
     let blob = new Blob([note.content], { type: "text/plain" });
     let url = URL.createObjectURL(blob);
@@ -225,7 +236,7 @@ document.querySelector("#fileMenu a:nth-child(3)").onclick = () => {
     a.download = note.filename;
     a.click();
 
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);*/
 };
 
 
