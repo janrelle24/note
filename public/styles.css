@@ -163,3 +163,55 @@ body{
 .menu-content.show{
     display: block;
 }
+/*start Modal Styles*/
+.modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+/* MODAL BOX */
+.modal-content {
+    background: white;
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.modal-content h3{
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+}
+/* FILE LIST */
+#fileList {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+#fileList li {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#fileList li:hover {
+    background: #e0e7ff;
+}
+
+/* CLOSE BUTTON */
+#closeModal {
+    padding: 10px;
+    background: #0d0c0c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+/*end Modal Styles*/

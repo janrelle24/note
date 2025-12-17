@@ -161,6 +161,9 @@ document.querySelector("#fileMenu a:nth-child(1)").onclick = () => {
 };
 
 // OPEN FILE (text file)
+const fileModal = document.getElementById("fileModal");
+const fileList = document.getElementById("fileList");
+const closeModal = document.getElementById("closeModal");
 document.querySelector("#fileMenu a:nth-child(2)").onclick = async () => {
     try{
         //get list of files from server
@@ -171,6 +174,20 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = async () => {
             alert("No saved notes found.");
             return;
         }
+        // Clear list
+        fileList.innerHTML = "";
+        // Populate file list
+        files.forEach(filename => {
+            let li = document.createElement("li");
+            li.textContent = filename;
+
+            li.onclick = () => openFile(filename);
+
+            fileList.appendChild(li);
+        });
+        // Show modal
+        fileModal.style.display = "flex";
+        /*
         // Ask user which file to open
         let filename = prompt(
             "Available files:\n" + files.join("\n") +
@@ -200,12 +217,39 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = async () => {
         // Rename tab
         document.querySelector(
             `[data-note="${activeNote}"] .tab-title`
-        ).innerText = filename.replace(".txt", "");
+        ).innerText = filename.replace(".txt", "");*/
     } catch(err){
         alert("Failed to open file");
         console.error(err);
     }
+
 };
+closeModal.onclick = () => fileModal.style.display = "none";
+fileModal.onclick = e => {
+    if (e.target === fileModal) fileModal.style.display = "none";
+};
+
+async function openFile(filename) {
+    try {
+        let res = await fetch(`/api/open/${filename}`);
+        let data = await res.json();
+
+        let ta = document.getElementById("notebook" + activeNote);
+        ta.value = data.content;
+
+        notes[activeNote].content = data.content;
+        notes[activeNote].filename = filename;
+
+        document.querySelector(
+            `[data-note="${activeNote}"] .tab-title`
+        ).innerText = filename.replace(".txt", "");
+
+        fileModal.style.display = "none";
+    } catch (err) {
+        alert("Failed to open file");
+        console.error(err);
+    }
+}
 
 // SAVE FILE
 //connect to server to save file

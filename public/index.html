@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Note Book</title>
+    <title>NoteBook</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
@@ -56,6 +56,13 @@
             <textarea name="notebook" id="notebook1" class="note-area"></textarea>
         </div>
     </main>
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <h3>Open File</h3>
+            <ul id="fileList"></ul>
+            <button id="closeModal">Close</button>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
