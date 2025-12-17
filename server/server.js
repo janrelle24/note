@@ -9,6 +9,14 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
+//folder where notes will store
+const NOTES_DIR = path.join(__dirname, "notes");
+
+// Create notes folder if not exists
+if (!fs.existsSync(NOTES_DIR)) {
+    fs.mkdirSync(NOTES_DIR);
+}
+
 //create api save notes
 app.post("/api/save", (req, res) =>{
     const { filename, content } = req.body;
@@ -29,6 +37,10 @@ app.post("/api/save", (req, res) =>{
 app.get("/api/open/:filename", (req, res) =>{
     const filePath = path.join(NOTES_DIR, req.params.filename);
 
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "File not found" });
+    }
+    
     fs.readFile(filePath, "utf8", (err, data) =>{
         if(err){
             return res.status(500).json({ error: "Failed to open note" });
@@ -37,7 +49,7 @@ app.get("/api/open/:filename", (req, res) =>{
     });
 });
 //list notes
-app.get("api/list", (req, res) =>{
+app.get("/api/list", (req, res) =>{
     fs.readdir(NOTES_DIR, (err, files) =>{
         if(err){
             return res.status(500).json({ error: "Cannot read notes" });
@@ -46,13 +58,6 @@ app.get("api/list", (req, res) =>{
     });
 });
 
-//folder where notes will store
-const NOTES_DIR = path.join(__dirname, "notes");
-
-// Create notes folder if not exists
-if (!fs.existsSync(NOTES_DIR)) {
-    fs.mkdirSync(NOTES_DIR);
-}
 
 //start server
 app.listen(PORT, () =>{

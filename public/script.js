@@ -161,34 +161,50 @@ document.querySelector("#fileMenu a:nth-child(1)").onclick = () => {
 };
 
 // OPEN FILE (text file)
-document.querySelector("#fileMenu a:nth-child(2)").onclick = () => {
-    let input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".txt";
+document.querySelector("#fileMenu a:nth-child(2)").onclick = async () => {
+    try{
+        //get list of files from server
+        let res = await fetch("/api/list");
+        let files = await res.json();
 
-    input.onchange = () => {
-        let file = input.files[0];
-        let reader = new FileReader();
+        if (files.length === 0) {
+            alert("No saved notes found.");
+            return;
+        }
+        // Ask user which file to open
+        let filename = prompt(
+            "Available files:\n" + files.join("\n") +
+            "\n\nEnter exact filename to open:"
+        );
 
-        reader.onload = () => {
-            let current = document.getElementById("notebook" + activeNote);
-            current.value = reader.result;
-            notes[activeNote].content = reader.result;
-            notes[activeNote].filename = file.name;
+        if (!filename) return;
 
-            // Remove .txt from tab name
-            let fileName = file.name.replace(".txt", "");
+        // Fetch file content
+        let fileRes = await fetch(`/api/open/${filename}`);
+        let data = await fileRes.json();
 
-            // Rename the tab
-            document.querySelector(
-                `[data-note="${activeNote}"] .tab-title`
-            ).innerText = fileName;
-        };
+        // Get active textarea
+        let current = document.getElementById("notebook" + activeNote);
+        
+        // Hide all textareas
+        document.querySelectorAll(".note-area")
+            .forEach(n => n.style.display = "none");
 
-        reader.readAsText(file);
-    };
+        current.style.display = "block";
 
-    input.click();
+        // Load content
+        current.value = data.content;
+        notes[activeNote].content = data.content;
+        notes[activeNote].filename = filename;
+
+        // Rename tab
+        document.querySelector(
+            `[data-note="${activeNote}"] .tab-title`
+        ).innerText = filename.replace(".txt", "");
+    } catch(err){
+        alert("Failed to open file");
+        console.error(err);
+    }
 };
 
 // SAVE FILE
