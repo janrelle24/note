@@ -58,6 +58,43 @@ app.get("/api/list", (req, res) =>{
     });
 });
 
+// DELETE FILE
+app.post("/api/delete", (req, res) => {
+    const { filename } = req.body;
+    const filePath = path.join(NOTES_DIR, filename);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "File not found" });
+    }
+
+    fs.unlink(filePath, err => {
+        if (err) {
+            return res.status(500).json({ error: "Delete failed" });
+        }
+        res.json({ message: "File deleted" });
+    });
+});
+
+// RENAME FILE
+app.post("/api/rename", (req, res) => {
+    const { oldName, newName } = req.body;
+
+    const oldPath = path.join(NOTES_DIR, oldName);
+    const newPath = path.join(NOTES_DIR, newName);
+
+    if (!fs.existsSync(oldPath)) {
+        return res.status(404).json({ error: "File not found" });
+    }
+
+    fs.rename(oldPath, newPath, err => {
+        if (err) {
+            return res.status(500).json({ error: "Rename failed" });
+        }
+        res.json({ message: "File renamed" });
+    });
+});
+
+
 
 //start server
 app.listen(PORT, () =>{

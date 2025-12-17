@@ -179,45 +179,31 @@ document.querySelector("#fileMenu a:nth-child(2)").onclick = async () => {
         // Populate file list
         files.forEach(filename => {
             let li = document.createElement("li");
-            li.textContent = filename;
+            li.textContent = "file-item";
 
-            li.onclick = () => openFile(filename);
+            li.innerHTML = `
+                <span class="file-name">${filename}</span>
+                <div class="file-actions">
+                    <button class="open-btn" title="Open">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </button>
+                    <button class="rename-btn" title="Rename">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="delete-btn" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            li.querySelector(".open-btn").onclick = () => openFile(filename);
+            li.querySelector(".delete-btn").onclick = () => deleteFile(filename);
+            li.querySelector(".rename-btn").onclick = () => renameFile(filename);
 
             fileList.appendChild(li);
         });
         // Show modal
         fileModal.style.display = "flex";
-        /*
-        // Ask user which file to open
-        let filename = prompt(
-            "Available files:\n" + files.join("\n") +
-            "\n\nEnter exact filename to open:"
-        );
-
-        if (!filename) return;
-
-        // Fetch file content
-        let fileRes = await fetch(`/api/open/${filename}`);
-        let data = await fileRes.json();
-
-        // Get active textarea
-        let current = document.getElementById("notebook" + activeNote);
-        
-        // Hide all textareas
-        document.querySelectorAll(".note-area")
-            .forEach(n => n.style.display = "none");
-
-        current.style.display = "block";
-
-        // Load content
-        current.value = data.content;
-        notes[activeNote].content = data.content;
-        notes[activeNote].filename = filename;
-
-        // Rename tab
-        document.querySelector(
-            `[data-note="${activeNote}"] .tab-title`
-        ).innerText = filename.replace(".txt", "");*/
     } catch(err){
         alert("Failed to open file");
         console.error(err);
@@ -229,6 +215,7 @@ fileModal.onclick = e => {
     if (e.target === fileModal) fileModal.style.display = "none";
 };
 
+//Open file
 async function openFile(filename) {
     try {
         let res = await fetch(`/api/open/${filename}`);
@@ -250,6 +237,65 @@ async function openFile(filename) {
         console.error(err);
     }
 }
+//delete file
+async function deleteFile(filename) {
+    if (!confirm(`Delete "${filename}"?`)) return;
+
+    try {
+        await fetch("/api/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename })
+        });
+
+        // If currently open file
+        if (notes[activeNote].filename === filename) {
+            notes[activeNote].filename = null;
+            document.getElementById("notebook" + activeNote).value = "";
+            document.querySelector(
+                `[data-note="${activeNote}"] .tab-title`
+            ).innerText = "Note " + activeNote;
+        }
+
+        alert("File deleted");
+        fileModal.style.display = "none";
+    } catch (err) {
+        alert("Delete failed");
+        console.error(err);
+    }
+}
+//rename file
+async function renameFile(oldName) {
+    let newName = prompt("Rename file:", oldName);
+    if (!newName || newName === oldName) return;
+
+    if (!newName.endsWith(".txt")) {
+        newName += ".txt";
+    }
+
+    try {
+        await fetch("/api/rename", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ oldName, newName })
+        });
+
+        // If active note
+        if (notes[activeNote].filename === oldName) {
+            notes[activeNote].filename = newName;
+            document.querySelector(
+                `[data-note="${activeNote}"] .tab-title`
+            ).innerText = newName.replace(".txt", "");
+        }
+
+        alert("File renamed");
+        fileModal.style.display = "none";
+    } catch (err) {
+        alert("Rename failed");
+        console.error(err);
+    }
+}
+
 
 // SAVE FILE
 //connect to server to save file
