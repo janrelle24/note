@@ -1,97 +1,88 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
+
+const mongoose = require("mongoose");
+
+mongoose.connect("mongodb://127.0.0.1:27017/notebook_app")
+.then(() => console.log("MongoDB connected"))
+.catch(err => console.error(err));
 
 const app = express();
 const PORT = 3000;
 
 //middleware
+const path = require("path");
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
-//folder where notes will store
-const NOTES_DIR = path.join(__dirname, "notes");
-
-// Create notes folder if not exists
-if (!fs.existsSync(NOTES_DIR)) {
-    fs.mkdirSync(NOTES_DIR);
-}
-
+const Note = require("./model/Note");
 //create api save notes
-app.post("/api/save", (req, res) =>{
+app.post("/api/save", async (req, res) =>{
     const { filename, content } = req.body;
 
     if(!filename){
         return res.status(400).json({ error: "Filename is required" });
     }
-    const filePath = path.join(NOTES_DIR, filename);
-
-    fs.writeFile(filePath, content, "utf8", (err) =>{
-        if(err){
-            return res.status(500).json({ error: "Failed to save note" });
-        }
-        res.json({ message: "File saved successfully" });
-    });
+    try{
+        const note = await Note.findOneAndUpdate(
+            { filename },
+            { content, updatedAt: new Date() },
+            { upsert: true, new: true }
+        );
+        res.json({ success: true, note });
+    } catch (err){
+        res.status(500).json({ error: "Save failed" });
+    }
 });
 //open notes
-app.get("/api/open/:filename", (req, res) =>{
-    const filePath = path.join(NOTES_DIR, req.params.filename);
-
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "File not found" });
-    }
+app.get("/api/open/:filename", async (req, res) =>{
     
-    fs.readFile(filePath, "utf8", (err, data) =>{
-        if(err){
-            return res.status(500).json({ error: "Failed to open note" });
+    try{
+        const note = await Note.findOne({ filename: req.params.filename });
+
+        if (!note) {
+            return res.status(404).json({ error: "File not found" });
         }
-        res.json({ content: data });
-    });
+        res.json({ content: note.content });
+    } catch (err){
+        res.status(500).json({ error: "Open failed" });
+    }
 });
 //list notes
-app.get("/api/list", (req, res) =>{
-    fs.readdir(NOTES_DIR, (err, files) =>{
-        if(err){
-            return res.status(500).json({ error: "Cannot read notes" });
-        }
-        res.json(files);
-    });
+app.get("/api/list", async (req, res) =>{
+    
+    try {
+        const notes = await Note.find({}, "filename");
+        res.json(notes.map(n => n.filename));
+    } catch (err) {
+        res.status(500).json({ error: "List failed" });
+    }
 });
 
 // DELETE FILE
-app.post("/api/delete", (req, res) => {
-    const { filename } = req.body;
-    const filePath = path.join(NOTES_DIR, filename);
-
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "File not found" });
+app.post("/api/delete", async (req, res) => {
+    
+    try {
+        await Note.deleteOne({ filename: req.body.filename });
+        res.json({ success: true });
+    } catch {
+        res.status(500).json({ error: "Delete failed" });
     }
-
-    fs.unlink(filePath, err => {
-        if (err) {
-            return res.status(500).json({ error: "Delete failed" });
-        }
-        res.json({ message: "File deleted" });
-    });
 });
 
 // RENAME FILE
-app.post("/api/rename", (req, res) => {
+app.post("/api/rename", async (req, res) => {
     const { oldName, newName } = req.body;
 
-    const oldPath = path.join(NOTES_DIR, oldName);
-    const newPath = path.join(NOTES_DIR, newName);
+    try {
+        await Note.updateOne(
+            { filename: oldName },
+            { filename: newName, updatedAt: new Date() }
+        );
 
-    if (!fs.existsSync(oldPath)) {
-        return res.status(404).json({ error: "File not found" });
+        res.json({ success: true });
+    } catch {
+        res.status(500).json({ error: "Rename failed" });
     }
-
-    fs.rename(oldPath, newPath, err => {
-        if (err) {
-            return res.status(500).json({ error: "Rename failed" });
-        }
-        res.json({ message: "File renamed" });
-    });
 });
 
 
