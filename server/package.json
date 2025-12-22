@@ -12,7 +12,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "connect-mongo": "^6.0.0",
     "express": "^5.2.1",
+    "express-session": "^1.18.2",
     "mongoose": "^9.0.2",
     "nodemon": "^3.1.11"
   }

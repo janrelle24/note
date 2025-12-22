@@ -1,10 +1,25 @@
 const express = require("express");
-
+const bcrypt = require("bcryptjs");
+const User = require("./model/User");
+//connect to mongodb
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb://127.0.0.1:27017/notebook_app")
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.error(err));
+
+//session management
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+app.use(session({
+    secret: "notebook_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: "mongodb://127.0.0.1:27017/notebook_app"
+    }),
+    cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
+}));
 
 const app = express();
 const PORT = 3000;
@@ -14,9 +29,50 @@ const path = require("path");
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
+function isAuth(req, res, next) {
+    if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+    next();
+}
+
 const Note = require("./model/Note");
+//register api
+app.post("/api/register", async (req, res) =>{
+    const { username, password } = req.body;
+    if(!username || !password){
+        return res.status(400).json({ error: "All fields required" });
+    }
+    try{
+        const hashed = await bcrypt.hash(password, 10);
+        const user = new User({ username, password: hashed});
+        await user.save();
+        res.json({ success: true });    
+    }catch (err){
+        res.status(400).json({ error: "User already exists" });
+    }
+});
+//login api
+app.post("/api/login", async (req, res) =>{
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+    if(!user) return res.status(400).json({ error: "Invalid Login" });
+
+    const match = await bcrypt.compare(password, user.password);
+    if(!match) return res.status(400).json({ error: "Invalid Login" });
+
+    req.session.userId = user._id;
+    res.json({ success: true });
+});
+//logout api
+app.post("/api/logout", (req, res) => {
+    req.session.destroy(() => {
+        res.json({ success: true });
+    });
+});
 //create api save notes
-app.post("/api/save", async (req, res) =>{
+app.post("/api/save", isAuth, async (req, res) =>{
     const { filename, content } = req.body;
 
     if(!filename){
@@ -24,7 +80,7 @@ app.post("/api/save", async (req, res) =>{
     }
     try{
         const note = await Note.findOneAndUpdate(
-            { filename },
+            { filename, userId: req.session.userId },
             { content, updatedAt: new Date() },
             { upsert: true, new: true }
         );
@@ -34,7 +90,7 @@ app.post("/api/save", async (req, res) =>{
     }
 });
 //open notes
-app.get("/api/open/:filename", async (req, res) =>{
+app.get("/api/open/:filename", isAuth, async (req, res) =>{
     
     try{
         const note = await Note.findOne({ filename: req.params.filename });
@@ -48,10 +104,10 @@ app.get("/api/open/:filename", async (req, res) =>{
     }
 });
 //list notes
-app.get("/api/list", async (req, res) =>{
+app.get("/api/list", isAuth, async (req, res) =>{
     
     try {
-        const notes = await Note.find({}, "filename");
+        const notes = await Note.find({userId: req.session.userId}, "filename");
         res.json(notes.map(n => n.filename));
     } catch (err) {
         res.status(500).json({ error: "List failed" });
@@ -59,7 +115,7 @@ app.get("/api/list", async (req, res) =>{
 });
 
 // DELETE FILE
-app.post("/api/delete", async (req, res) => {
+app.post("/api/delete", isAuth, async (req, res) => {
     
     try {
         await Note.deleteOne({ filename: req.body.filename });
@@ -70,7 +126,7 @@ app.post("/api/delete", async (req, res) => {
 });
 
 // RENAME FILE
-app.post("/api/rename", async (req, res) => {
+app.post("/api/rename", isAuth, async (req, res) => {
     const { oldName, newName } = req.body;
 
     try {
