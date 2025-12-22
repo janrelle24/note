@@ -10,6 +10,71 @@ body{
     align-items: center;
     min-height: 100vh;
 }
+/*start login design*/
+.login-container{
+    background-color: white;
+    width: 350px;
+    padding: 30px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.login-container h1 {
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.input-group i {
+    margin-right: 8px;
+    color: #555;
+}
+
+.input-group input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #000;
+}
+
+.extra {
+    margin-top: 15px;
+    font-size: 0.85rem;
+}
+
+.extra a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+}
+/*end login design*/
 .note-container{
     background: #fff;
     width: 100%;
