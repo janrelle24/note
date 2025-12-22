@@ -1,3 +1,10 @@
+fetch("/api/list").then(res => {
+    if (res.status === 401) {
+        location.href = "/login.html";
+    }
+});
+
+
 // start dropdown
 let activeMenu = null;
 
