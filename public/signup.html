@@ -12,25 +12,25 @@
         <h1>Notebook</h1>
         <p class="subtitle">Create your account</p>
 
-        <form>
+        <form id="signupForm">
             <div class="input-group">
                 <i class="fa-solid fa-user"></i>
-                <input type="text" placeholder="Username" required>
+                <input id="signupUsername" type="text" placeholder="Username" required>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-envelope"></i>
-                <input type="email" placeholder="Email" required>
+                <input id="signupEmail" type="email" placeholder="Email" required>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" placeholder="Password" required>
+                <input id="signupPassword" type="password" placeholder="Password" required>
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" placeholder="Confirm Password" required>
+                <input id="signupConfirm" type="password" placeholder="Confirm Password" required>
             </div>
 
             <button type="submit" class="login-btn">Sign Up</button>
@@ -40,5 +40,6 @@
             Already have an account? <a href="login.html">Login</a>
         </p>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>

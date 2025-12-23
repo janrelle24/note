@@ -1,16 +1,26 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const User = require("./model/User");
-//connect to mongodb
 const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoStore = require("connect-mongo").default;
+const path = require("path");
+const Note = require("./model/Note");
+const User = require("./model/User");
+
+const app = express();
+const PORT = 3000;
 
 mongoose.connect("mongodb://127.0.0.1:27017/notebook_app")
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.error(err));
 
+//middleware
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "../public")));
+
 //session management
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
+
 app.use(session({
     secret: "notebook_secret_key",
     resave: false,
@@ -21,13 +31,6 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
 }));
 
-const app = express();
-const PORT = 3000;
-
-//middleware
-const path = require("path");
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "../public")));
 
 function isAuth(req, res, next) {
     if (!req.session.userId) {
@@ -36,20 +39,38 @@ function isAuth(req, res, next) {
     next();
 }
 
-const Note = require("./model/Note");
 //register api
 app.post("/api/register", async (req, res) =>{
-    const { username, password } = req.body;
-    if(!username || !password){
+    const { username, email, password } = req.body;
+    if(!username || !email || !password){
         return res.status(400).json({ error: "All fields required" });
     }
     try{
+        /*
         const hashed = await bcrypt.hash(password, 10);
         const user = new User({ username, password: hashed});
         await user.save();
-        res.json({ success: true });    
+        res.json({ success: true });*/
+        const exists = await User.findOne({
+            $or: [{ username }, { email }]
+        }); 
+        if(exists){
+            return res.status(400).json({ error: "Username or Email already taken" });
+        }
+        // Hash password
+        const hashed = await bcrypt.hash(password, 10);
+        //Save user
+        const user = new User({
+            username,
+            email,
+            password: hashed
+        });
+        await user.save();
+
+        res.json({ success: true });
+        
     }catch (err){
-        res.status(400).json({ error: "User already exists" });
+        res.status(500).json({ error: "Server error" });
     }
 });
 //login api
