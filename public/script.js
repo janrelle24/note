@@ -1,77 +1,90 @@
-fetch("/api/list").then(res => {
+/*fetch("/api/list").then(res => {
     if (res.status === 401) {
         location.href = "/login.html";
     }
-});
+});*/
+if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
+    fetch("/api/list").then(res => {
+        if (res.status === 401) {
+            location.href = "/login.html";
+        }
+    });
+}
 //login
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault(); //stop page reload
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
 
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if(!username || !password){
-        alert("Please enter username and password");
-        return;
-    }
-    try{
-        const res = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password })
-        });
-        const data = await res.json();
-        if(res.ok) {
-            window.location.href = "/"; //redirect to home page
-        }else{
-            alert(data.error || "Invalid username or password");
+        if(!username || !password){
+            alert("Please enter username and password");
+            return;
         }
+        try{
+            const res = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if(res.ok) {
+                window.location.href = "/"; //redirect to home page
+            }else{
+                alert(data.error || "Invalid username or password");
+            }
 
-    }catch(err){
-        console.error(err);
-        alert("Server error. Please try again.");
-    }
-});
+        }catch(err){
+            console.error(err);
+            alert("Server error. Please try again.");
+        }
+    });
+}
+
 //signup
-document.getElementById("signupForm").addEventListener("submit", async (e) => {
-    e.preventDefault(); //stop page reload
+const signupForm = document.getElementById("signupForm");
+if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById("signupUsername").value.trim();
+        const email = document.getElementById("signupEmail").value.trim();
+        const password = document.getElementById("signupPassword").value.trim();
+        const confirm = document.getElementById("signupConfirm").value.trim();
 
-    const username = document.getElementById("signupUsername").value.trim();
-    const email = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value.trim();
-    const confirm = document.getElementById("signupConfirm").value.trim();
-
-    if(!username || !email || !password || !confirm){
-        alert("Please fill in all fields");
-        return;
-    }
-    if(password !== confirm){
-        alert("Passwords do not match");
-        return;
-    }
-    try{
-        const res = await fetch("/api/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, email, password })
-        });
-        const dat = await res.json();
-        if(res.ok){
-            alert("Registration successful!");
-            window.location.href = "/login.html"; //redirect to login page
-        }else{
-            alert(dat.error || "Registration failed");
+        if(!username || !email || !password || !confirm){
+            alert("Please fill in all fields");
+            return;
         }
-    }catch (err){
-        console.error(err);
-        alert("Server error. Please try again.");
-    }
-});
-
+        if(password !== confirm){
+            alert("Passwords do not match");
+            return;
+        }
+        try{
+            const res = await fetch("/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, email, password })
+            });
+            const dat = await res.json();
+            if(res.ok){
+                alert("Registration successful!");
+                window.location.href = "/login.html"; //redirect to login page
+            }else{
+                alert(dat.error || "Registration failed");
+            }
+        }catch (err){
+            console.error(err);
+            alert("Server error. Please try again.");
+        }
+    });
+}
 
 // start dropdown
 let activeMenu = null;
