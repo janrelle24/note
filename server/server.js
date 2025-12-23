@@ -46,11 +46,6 @@ app.post("/api/register", async (req, res) =>{
         return res.status(400).json({ error: "All fields required" });
     }
     try{
-        /*
-        const hashed = await bcrypt.hash(password, 10);
-        const user = new User({ username, password: hashed});
-        await user.save();
-        res.json({ success: true });*/
         const exists = await User.findOne({
             $or: [{ username }, { email }]
         }); 

@@ -1,8 +1,3 @@
-/*fetch("/api/list").then(res => {
-    if (res.status === 401) {
-        location.href = "/login.html";
-    }
-});*/
 if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
     fetch("/api/list").then(res => {
         if (res.status === 401) {
@@ -441,17 +436,6 @@ document.querySelector("#fileMenu a:nth-child(3)").onclick = async () => {
         })
     });
     alert("File saved successfully!");
-    /*
-    // Create file
-    let blob = new Blob([note.content], { type: "text/plain" });
-    let url = URL.createObjectURL(blob);
-
-    let a = document.createElement("a");
-    a.href = url;
-    a.download = note.filename;
-    a.click();
-
-    URL.revokeObjectURL(url);*/
 };
 
 

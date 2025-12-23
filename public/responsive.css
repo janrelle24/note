@@ -1,0 +1,141 @@
+@media (max-width: 480px) {
+
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
+    /* Login */
+    
+    .login-container {
+        width: 100%;
+        max-width: 350px;
+        padding: 20px;
+    }
+
+    .login-container h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Notes container */
+    .note-container {
+        width: 100%;
+        max-width: 500px;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .note-container h1 {
+        font-size: 1.6rem;
+    }
+
+    .note-tabs{
+        height: 100%;
+        display: flex;
+    }
+
+    .tab-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        gap: 6px;
+    }
+
+    /* Note area */
+    .note-area {
+        min-width: 100%;
+        min-height: 50vh;
+        font-size: 1rem;
+        line-height: 24px;
+        padding: 15px;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 90%;
+    }
+
+    /* File list */
+    .file-name {
+        font-size: 13px;
+    }
+
+    .file-actions button {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+    }
+}
+@media (max-width: 768px) {
+
+    body {
+        padding: 15px;
+    }
+
+    /* Login */
+    .login-container {
+        max-width: 380px;
+    }
+
+    /* Notes */
+    .note-container {
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .note-container h1 {
+        font-size: 1.9rem;
+    }
+
+    /* Note area */
+    .note-area {
+        min-width: 100%;
+        min-height: 55vh;
+        font-size: 1.05rem;
+    }
+
+    /* Tabs */
+    .tab-btn {
+        padding: 7px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 340px;
+    }
+}
+@media (max-width: 1024px) {
+
+    /* Main container */
+    .note-container {
+        max-width: 95%;
+    }
+
+    /* Note area */
+    .note-area {
+        min-width: 100%;
+        min-height: 60vh;
+    }
+
+    /* Tabs */
+    .tab-btn {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    /* File list */
+    .file-name {
+        max-width: 220px;
+    }
+}
+@media (min-width: 1200px) {
+
+    .note-container {
+        max-width: 1100px;
+    }
+
+    .note-area {
+        min-height: 65vh;
+        font-size: 1.15rem;
+    }
+}
