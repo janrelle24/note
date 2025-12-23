@@ -92,6 +92,13 @@ app.post("/api/logout", (req, res) => {
         res.json({ success: true });
     });
 });
+app.get("/", (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect("/login.html");
+    }
+    res.sendFile(path.join(__dirname, "../public/index.html"));
+});
+
 //create api save notes
 app.post("/api/save", isAuth, async (req, res) =>{
     const { filename, content } = req.body;

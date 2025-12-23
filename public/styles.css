@@ -75,6 +75,20 @@ body{
     font-weight: bold;
 }
 /*end login design*/
+/*start logout design*/
+#logout {
+    color: #333;
+    font-weight: bold;
+}
+
+#logout:hover {
+    background-color: #515254;
+    color: white;
+}
+#logout i{
+    margin-right: 8px;
+}
+/*end logout design*/
 .note-container{
     background: #fff;
     width: 100%;

@@ -85,6 +85,27 @@ if (signupForm) {
         }
     });
 }
+//logout
+const logout = document.getElementById("logout");
+if (logout){
+    logout.addEventListener("click", async (e) =>{
+        e.preventDefault();
+
+        try{
+            const res = await fetch("/api/logout", {
+                method: "POST"
+            });
+            if(res.ok){
+                window.location.href = "/login.html"; //redirect to login page
+            }else{
+                alert("Logout failed");
+            }
+        }catch(err){
+            console.error(err);
+            alert("Server error. Please try again.");
+        }
+    });
+}
 
 // start dropdown
 let activeMenu = null;
